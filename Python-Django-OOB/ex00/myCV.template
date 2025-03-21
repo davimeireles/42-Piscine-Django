@@ -1,0 +1,7 @@
+<h1>{name}</h1>
+<p>"-Who are you?
+-A {name} {surname}!"</p>
+<p>"Age"
+{age}</p>
+<p>"Profession"
+{profession}</p>
