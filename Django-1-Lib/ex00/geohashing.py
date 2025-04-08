@@ -1,5 +1,4 @@
 import sys
-#import antigravity
 
 BASE32 = "0123456789bcdefghjkmnpqrstuvwxyz"
 
