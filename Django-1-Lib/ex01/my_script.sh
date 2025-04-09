@@ -1,32 +1,23 @@
 #!/bin/bash
 
-# LOG file
-LOG_FILE='pathpy.log'
-
-# Show pip version.
+# Display pip version
+echo "Using pip version:"
 pip --version
 
-# Install Dependencies(numpy && spicy)
-sudo apt install python3-numpy
-dpkg --install spicy.deb
+# Create local_lib directory if it doesn't exist
+mkdir -p local_lib
 
-# Create the folder to put pathpy from github.
-mkdir local_lib
+# Install path.py from GitHub repo into local_lib folder
+# The -f flag forces reinstallation if already installed
+echo "Installing path.py library..."
+pip install -f https://github.com/jaraco/path.git --target=./local_lib path.py > installation.log 2>&1
 
-# Move to local_lib folder.
-cd local_lib
-
-# Check if pathpy is already installed.
-if python3 -m pip show pathpy &>/dev/null; then
-    echo "Pathpy is already installed. Uninstalling..." | tee -a "$LOG_FILE"
-    # Uninstall pathpy
-    python3 -m pip uninstall -y pathpy >> "$LOG_FILE" 2>&1
+# Check if installation was successful
+if [ $? -eq 0 ]; then
+    echo "path.py successfully installed in local_lib folder"
+    # Execute the Python program
+    python3 my_program.py
 else
-    echo "pathpy is not installed." | tee -a "$LOG_FILE"
+    echo "Failed to install path.py. Check installation.log for details"
+    exit 1
 fi
-
-
-echo "Installing pathpy..." | tee -a "$LOG_FILE"
-
-# Installing pathpy
-pip install git+https://github.com/pathpy/pathpy.git#egg=pathpy >> "$LOG_FILE" 2>&1
