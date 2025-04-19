@@ -1,12 +1,6 @@
 import random
 from beverages import HotBeverage, Coffee, Tea, Chocolate, Capuccino
 
-class EmptyCup(HotBeverage):
-    # Represents an empty cup, inheriting from HotBeverage.
-    def __init__(self):
-        # Initializes the EmptyCup with a name, price, and description.
-        super().__init__("empty cup", 0.90, "An empty cup?! Gimme my money back!")
-
 class CoffeeMachine:
     # Represents a coffee machine that can serve beverages.
     def __init__(self):
@@ -18,6 +12,12 @@ class CoffeeMachine:
         # Indicates whether the machine is broken.
         self.broken = False
 
+    class EmptyCup(HotBeverage):
+    # Represents an empty cup, inheriting from HotBeverage.
+        def __init__(self):
+            # Initializes the EmptyCup with a name, price, and description.
+            super().__init__("empty cup", 0.90, "An empty cup?! Gimme my money back!")
+
     def serve(self, beverage_type):
         # Serves a beverage of the specified type.
         # Prints a message if the machine is broken.
@@ -27,11 +27,11 @@ class CoffeeMachine:
         if self.total_coups_in_machine == 0:
             # If there are no cups left, mark the machine as broken and raise an exception.
             self.broken = True
-            raise BrokenMachineException()
+            raise self.BrokenMachineException()
 
         if random.random() < self.random_chance_to_serve_empty_cup:
             # Randomly serve an empty cup based on the defined probability.
-            beverage_to_serve = EmptyCup()
+            beverage_to_serve = self.EmptyCup()
         else:
             # Otherwise, serve the specified beverage type.
             beverage_to_serve = beverage_type
@@ -50,14 +50,14 @@ class CoffeeMachine:
         # Prints a message indicating the machine has been repaired.
         print("Machine was repaired and you can serve beverages again.\n")
 
-class BrokenMachineException(Exception):
-    # Represents an exception that is raised when the coffee machine is broken.
-    def __init__(self, message = 'This coffee machine has to be repaired.'):
-        # Initializes the BrokenMachineException with a default message.
-        # Sets the exception message.
-        self.message = message
-        # Calls the constructor of the parent Exception class.
-        super().__init__(self.message)
+    class BrokenMachineException(Exception):
+        # Represents an exception that is raised when the coffee machine is broken.
+        def __init__(self, message = 'This coffee machine has to be repaired.'):
+            # Initializes the BrokenMachineException with a default message.
+            # Sets the exception message.
+            self.message = message
+            # Calls the constructor of the parent Exception class.
+            super().__init__(self.message)
 
 if __name__ == '__main__':
 
@@ -73,7 +73,7 @@ if __name__ == '__main__':
 
             # Prints the string representation of the served beverage.
             print(beverage.__str__())
-    except BrokenMachineException:
+    except machine.BrokenMachineException:
         # If a BrokenMachineException occurs, repair the machine and serve other beverages.
 
         # Repairs the broken machine.
