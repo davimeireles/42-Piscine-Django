@@ -7,7 +7,7 @@ def display_numbers_from_file():
     numbers = file.read()
     
     # Split the content of the file into lines
-    lines = numbers.split(',')
+    lines = numbers.strip().split(',')
     
     # Print the content of the file
     for lines in lines:
