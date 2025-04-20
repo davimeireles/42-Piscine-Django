@@ -1,0 +1,20 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>{% block title %}Base HTML Title{% endblock %}</title>
+	{% block styles %}
+	<link rel="stylesheet" type="text/css" href="{% static 'ex01/css/style1.css' %}">
+	{% endblock %}
+</head>
+<body>
+	{% include "nav.html" %}
+	<content>
+		{% block content %}
+		<p>This is the base content</p>
+		{% endblock %}
+	</content>
+</body>
+</html>

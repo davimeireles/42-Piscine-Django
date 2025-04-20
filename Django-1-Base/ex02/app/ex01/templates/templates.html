@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}Ex01: Template engine.{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" type="text/css" href="{% static 'ex01/css/style2.css' %}">
+{% endblock %}
+
+{% block content %}
+Django’s default template engine is designed to combine static HTML with dynamic data, using a simple syntax that allows logic to be embedded in templates without writing raw Python. Templates can define blocks using {% block block_name %}...{% endblock %}, which allow child templates to override specific sections of a base template, enabling reuse and layout inheritance. Inside templates, loops can be created using {% for item in list %}...{% endfor %}, which iterates over context variables (like lists or querysets) passed from the view. Conditional logic is handled with {% if condition %}...{% endif %}, allowing content to be shown or hidden based on values in the context. Context variables are passed from the view to the template as a dictionary, and are displayed in the template using double curly braces, like {{ variable_name }}, enabling dynamic rendering of data such as strings, numbers, or objects.
+{% endblock %}
