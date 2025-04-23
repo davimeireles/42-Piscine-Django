@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Update Table Row</title>
+</head>
+<body>
+    <h1>Update Movie</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label for="title">Select a movie:</label>
+        <select name="title" id="title">
+            {% for title in titles %}
+                <option value="{{ title }}">{{ title }}</option>
+            {% endfor %}
+        </select>
+        <label for="text">Insert a Opening Craw Text</label>
+        <input type="text" id="craw_text" name="craw_text">
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
