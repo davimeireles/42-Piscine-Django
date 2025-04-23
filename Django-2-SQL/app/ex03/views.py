@@ -46,10 +46,12 @@ def display_movies_ex03(request):
             html += f"<th>{column}</th>"
         html += "</tr>"
 
-        """
-        """
-        
-
+        for movie in movies:
+            html += "<tr>"
+            for column in column_names:
+                value = getattr(movie, column)
+                html += f"<td>{value}</td>"
+            html += "</tr>"
 
         html += "</table></body></html>"
 
