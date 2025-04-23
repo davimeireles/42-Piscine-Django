@@ -24,7 +24,7 @@ def create_movies_table(request):
             opening_crawl TEXT,
             director VARCHAR(32) NOT NULL,
             producer VARCHAR(128) NOT NULL,
-            release_data TIMESTAMP NOT NULL
+            release_date TIMESTAMP NOT NULL
         );
         """
 

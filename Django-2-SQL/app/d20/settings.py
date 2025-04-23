@@ -38,6 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'ex00',
+    'ex01',
+    'ex02',
+    'ex03',
 ]
 
 MIDDLEWARE = [
@@ -77,6 +80,11 @@ WSGI_APPLICATION = 'd20.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'djangotraining',
+        'USER': 'djangouser',
+        'PASSWORD': 'secret',
+        'HOST': 'localhost',
+        'PORT': '5433',
     }
 }
 
@@ -111,6 +119,7 @@ USE_I18N = True
 
 USE_TZ = True
 
+APPEND_SLASH = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
