@@ -1,7 +1,6 @@
 import psycopg2
 import csv
 import io
-import tempfile
 from django.shortcuts import render
 from django.http import HttpResponse
 # Create your views here.
