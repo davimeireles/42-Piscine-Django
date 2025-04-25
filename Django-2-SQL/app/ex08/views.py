@@ -3,6 +3,7 @@ import csv
 import io
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.utils.html import escape
 # Create your views here.
 
 def init_tables_ex08(request):
@@ -286,6 +287,9 @@ def process_planets_with_copy(cursor):
     planets_data = io.StringIO()
     planets_count = 0
     
+    # Change the null representation from '\n' to '\N' (PostgreSQL's default)
+    null_marker = r'\N'
+    
     # Read and transform the input CSV
     with open('planets.csv', 'r') as planets_file:
         csv_reader = csv.reader(planets_file, delimiter='\t')
@@ -295,45 +299,46 @@ def process_planets_with_copy(cursor):
             
             planets_count += 1
             name = row[0].strip()
-            climate = row[1].strip() if row[1] else '\N'  # PostgreSQL NULL is represented as \N
+            climate = row[1].strip() if row[1] else null_marker
             
             # Handle numeric conversions
             try:
-                diameter = row[2].strip() if row[2] and row[2].strip().upper() not in ['NA', 'NULL', 'UNKNOWN', ''] else '\N'
-                if diameter != '\N':
+                diameter = row[2].strip() if row[2] and row[2].strip().upper() not in ['NA', 'NULL', 'UNKNOWN', ''] else null_marker
+                if diameter != null_marker:
                     int(diameter)  # Just to validate it's an integer
             except ValueError:
-                diameter = '\N'
-                
+                diameter = null_marker
+            
+            # Apply the same pattern to the rest of the fields
             try:
-                orbital_period = row[3].strip() if row[3] and row[3].strip().upper() not in ['NA', 'NULL', 'UNKNOWN', ''] else '\N'
-                if orbital_period != '\N':
+                orbital_period = row[3].strip() if row[3] and row[3].strip().upper() not in ['NA', 'NULL', 'UNKNOWN', ''] else null_marker
+                if orbital_period != null_marker:
                     int(orbital_period)
             except ValueError:
-                orbital_period = '\N'
+                orbital_period = null_marker
                 
             try:
-                population = row[4].strip() if row[4] and row[4].strip().upper() not in ['NA', 'NULL', 'UNKNOWN', ''] else '\N'
-                if population != '\N':
+                population = row[4].strip() if row[4] and row[4].strip().upper() not in ['NA', 'NULL', 'UNKNOWN', ''] else null_marker
+                if population != null_marker:
                     int(population)
             except ValueError:
-                population = '\N'
+                population = null_marker
                 
             try:
-                rotation_period = row[5].strip() if row[5] and row[5].strip().upper() not in ['NA', 'NULL', 'UNKNOWN', ''] else '\N'
-                if rotation_period != '\N':
+                rotation_period = row[5].strip() if row[5] and row[5].strip().upper() not in ['NA', 'NULL', 'UNKNOWN', ''] else null_marker
+                if rotation_period != null_marker:
                     int(rotation_period)
             except ValueError:
-                rotation_period = '\N'
+                rotation_period = null_marker
                 
             try:
-                surface_water = row[6].strip() if row[6] and row[6].strip().upper() not in ['NA', 'NULL', 'UNKNOWN', ''] else '\N'
-                if surface_water != '\N':
+                surface_water = row[6].strip() if row[6] and row[6].strip().upper() not in ['NA', 'NULL', 'UNKNOWN', ''] else null_marker
+                if surface_water != null_marker:
                     float(surface_water)
             except ValueError:
-                surface_water = '\N'
+                surface_water = null_marker
                 
-            terrain = row[7].strip() if row[7] else '\N'
+            terrain = row[7].strip() if row[7] else null_marker
             
             # Write the formatted line to our StringIO object
             planets_data.write(f"{name}\t{climate}\t{diameter}\t{orbital_period}\t{population}\t{rotation_period}\t{surface_water}\t{terrain}\n")
@@ -346,7 +351,7 @@ def process_planets_with_copy(cursor):
         planets_data, 
         'ex08_planets', 
         columns=('name', 'climate', 'diameter', 'orbital_period', 'population', 'rotation_period', 'surface_water', 'terrain'),
-        null='\N'
+        null=r'\N'  # Use PostgreSQL's default null marker
     )
     
     return planets_count
@@ -355,6 +360,9 @@ def process_people_with_copy(cursor):
     # Create a StringIO object to hold the CSV data
     people_data = io.StringIO()
     people_count = 0
+    
+    # Change the null representation
+    null_marker = r'\N'
     
     # Read and transform the input CSV
     with open('people.csv', 'r') as people_file:
@@ -365,25 +373,25 @@ def process_people_with_copy(cursor):
             
             people_count += 1
             name = row[0].strip()
-            birth_year = row[1].strip() if row[1] else '\N'
-            gender = row[2].strip() if row[2] else '\N'
-            eye_color = row[3].strip() if row[3] else '\N'
-            hair_color = row[4].strip() if row[4] else '\N'
+            birth_year = row[1].strip() if row[1] else null_marker
+            gender = row[2].strip() if row[2] else null_marker
+            eye_color = row[3].strip() if row[3] else null_marker
+            hair_color = row[4].strip() if row[4] else null_marker
             
             # Handle numeric conversions
             try:
-                height = row[5].strip() if row[5] and row[5].strip().upper() not in ['NA', 'NULL', 'UNKNOWN', ''] else '\N'
-                if height != '\N':
+                height = row[5].strip() if row[5] and row[5].strip().upper() not in ['NA', 'NULL', 'UNKNOWN', ''] else null_marker
+                if height != null_marker:
                     int(height)
             except ValueError:
-                height = '\N'
+                height = null_marker
                 
             try:
-                mass = row[6].strip() if row[6] and row[6].strip().upper() not in ['NA', 'NULL', 'UNKNOWN', ''] else '\N'
-                if mass != '\N':
+                mass = row[6].strip() if row[6] and row[6].strip().upper() not in ['NA', 'NULL', 'UNKNOWN', ''] else null_marker
+                if mass != null_marker:
                     float(mass)
             except ValueError:
-                mass = '\N'
+                mass = null_marker
             
             # Check if homeworld is valid, otherwise use 'unknown'
             homeworld = row[7].strip() if row[7] and row[7].strip().upper() not in ['NA', 'NULL', 'UNKNOWN', ''] else 'unknown'
@@ -405,7 +413,96 @@ def process_people_with_copy(cursor):
         people_data, 
         'ex08_people', 
         columns=('name', 'birth_year', 'gender', 'eye_color', 'hair_color', 'height', 'mass', 'homeworld'),
-        null='\N'
+        null=r'\N'  # Use PostgreSQL's default null marker
     )
     
     return people_count
+
+
+def display_table_sorted(request):
+    try:
+        # Connect to PostgreSQL
+        connection = psycopg2.connect(
+            dbname='djangotraining',
+            user='djangouser',
+            password='secret',
+            host='127.0.0.1',
+            port=5433
+        )
+
+        cursor = connection.cursor()
+
+        # Use JOIN to get people from planets with windy climate
+        cursor.execute("""
+            SELECT
+                ex08_people.name,
+                ex08_people.homeworld,
+                ex08_planets.climate
+            FROM
+                ex08_people
+            JOIN
+                ex08_planets ON ex08_people.homeworld = ex08_planets.name
+            WHERE
+                ex08_planets.climate LIKE '%windy%'
+            ORDER BY
+                ex08_people.homeworld, ex08_people.name
+        """)
+
+        # Fetch all data
+        data = cursor.fetchall()
+
+        # Close cursor and connection
+        cursor.close()
+        connection.close()
+
+        if not data:
+            return HttpResponse('No avaible data')
+        
+        # Create proper HTML with DOCTYPE, charset, and structure
+        html = """
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>People from Windy Planets</title>
+            <style>
+                table { border-collapse: collapse; width: 100%; }
+                th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                th { background-color: #f2f2f2; }
+                tr:nth-child(even) { background-color: #f9f9f9; }
+                h1 { color: #333; }
+            </style>
+        </head>
+        <body>
+            <h1>People from Windy Planets</h1>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Homeworld</th>
+                        <th>Climate</th>
+                    </tr>
+                </thead>
+                <tbody>
+        """
+
+        for row in data:
+            html += f"""
+                <tr>
+                    <td>{escape(str(row[0]))}</td>
+                    <td>{escape(str(row[1]))}</td>
+                    <td>{escape(str(row[2]))}</td>
+                </tr>
+            """
+
+        # Close the HTML structure
+        html += """
+                </tbody>
+            </table>
+        </body>
+        </html>
+        """
+        return HttpResponse(html)
+    except Exception as error:
+        return HttpResponse(f'{error}')
