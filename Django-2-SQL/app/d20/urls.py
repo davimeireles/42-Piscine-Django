@@ -27,4 +27,5 @@ urlpatterns = [
     re_path(r'^ex06/', include('ex06.urls')),
     re_path(r'^ex07/', include('ex07.urls')),
     re_path(r'^ex08/', include('ex08.urls')),
+    re_path(r'^ex09/', include('ex09.urls')),
 ]
