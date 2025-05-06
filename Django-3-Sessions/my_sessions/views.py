@@ -2,6 +2,7 @@ import random
 import time
 from d02 import settings
 from django.shortcuts import render
+from django.http import HttpResponse
 
 # Create your views here.
 def set_username(request):
@@ -18,3 +19,9 @@ def set_username(request):
     
     # Display the username
     return render(request, 'index.html', {'choosen_name': username})
+
+def register(request):
+    return render(request, 'register.html')
+
+def login(request):
+    return render(request, 'login.html')
