@@ -1,4 +1,4 @@
-#!/home/dmeireles/42-Piscine-Django/Django-1-Base/ex03/django_venv/bin/python3
+#!/home/dmeirele/42-Piscine-Django/Django-1-Base/django_venv/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys

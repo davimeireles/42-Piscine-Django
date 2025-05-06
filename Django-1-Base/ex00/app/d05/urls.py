@@ -20,5 +20,5 @@ from ex00 import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    re_path(r'^ex00/', views.show_markdown, name='show_markdown'),
+    re_path(r'^ex00/?', views.show_markdown, name='show_markdown'),
 ]

@@ -1,0 +1,3 @@
+[2025-05-06 11:14:28] Name: Teste, Last Name: Nunes, Age: 40
+[2025-05-06 11:16:31] Name: asdsadasd, Last Name: asdasdasdad, Age: 4
+[2025-05-06 11:16:36] Name: asdasdada, Last Name: dasdasdas, Age: 7
