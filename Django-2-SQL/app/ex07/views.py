@@ -1,4 +1,4 @@
-from .models import Movies_ex07
+from .models import Movies
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.utils import timezone
@@ -20,7 +20,7 @@ def populate_movies_ex07(request):
 
         for movie in movies:
             try:
-                movie = Movies_ex07(
+                movie = Movies(
                     episode_nb=movie[0],
                     title=movie[1],
                     director=movie[2],
@@ -38,8 +38,8 @@ def populate_movies_ex07(request):
 
 def display_movies_ex07(request):
     try:
-        movies = Movies_ex07.objects.all()
-        column_names = [field.name for field in Movies_ex07._meta.fields]
+        movies = Movies.objects.all()
+        column_names = [field.name for field in Movies._meta.fields]
         html = "<html><body><h1>Movies</h1><table border='1'>"
 
         html += "<tr>"
@@ -65,7 +65,7 @@ def display_movies_ex07(request):
 def update_table_row_ex07(request):
     try:
         # Get all titles from the table
-        titles = Movies_ex07.objects.values_list('title', flat=True)
+        titles = Movies.objects.values_list('title', flat=True)
 
         if request.method == 'POST':
             # Get the selected title and the new opening crawl text from the form
@@ -73,7 +73,7 @@ def update_table_row_ex07(request):
             new_craw_text = request.POST.get('craw_text')
 
             # Get the specific title
-            row_to_update = Movies_ex07.objects.filter(title=selected_title)
+            row_to_update = Movies.objects.filter(title=selected_title)
             row_to_update.update(opening_crawl=new_craw_text, updated=timezone.now())
             return redirect('/ex07/update')
         return render(request, 'update_table_row.html', {'titles': titles})

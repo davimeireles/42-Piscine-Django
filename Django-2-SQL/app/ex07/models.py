@@ -1,7 +1,7 @@
 from django.db import models
 
 # Create your models here.
-class Movies_ex07(models.Model):
+class Movies(models.Model):
     title = models.CharField(unique=True, max_length=64, null=False)
     episode_nb = models.IntegerField(primary_key=True)
     opening_crawl = models.TextField(null=True)
