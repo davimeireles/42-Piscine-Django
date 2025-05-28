@@ -1,16 +1,17 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 import psycopg2
+import os
 
 def create_movies_table(request):
     try:
         # Connect to the PostgreSQL using psycopg2
         connection = psycopg2.connect(
-            dbname='djangotraining',
-            user='djangouser',
-            password='secret',
-            host='127.0.0.1',
-            port=5433
+            dbname=os.getenv('NAME'),
+            user=os.getenv('USER'),
+            password=os.getenv('PASSWORD'),
+            host=os.getenv('HOST'),
+            port=os.getenv('PORT')
         )
 
         # Create a cursor to execute SQL
@@ -24,7 +25,7 @@ def create_movies_table(request):
             opening_crawl TEXT,
             director VARCHAR(32) NOT NULL,
             producer VARCHAR(128) NOT NULL,
-            release_date TIMESTAMP NOT NULL
+            release_date DATE NOT NULL
         );
         """
 

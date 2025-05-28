@@ -1,6 +1,7 @@
 import psycopg2
 import csv
 import io
+import os
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.utils.html import escape
@@ -10,11 +11,11 @@ def init_tables_ex08(request):
     try:
         # Connect to the PostgreSQL using psycopg2
         connection = psycopg2.connect(
-            dbname='djangotraining',
-            user='djangouser',
-            password='secret',
-            host='127.0.0.1',
-            port=5433
+            dbname=os.getenv('NAME'),
+            user=os.getenv('USER'),
+            password=os.getenv('PASSWORD'),
+            host=os.getenv('HOST'),
+            port=os.getenv('PORT')
         )
 
         # Create a cursor to execute SQL
@@ -115,11 +116,11 @@ def populate_tables_ex08(request):
             try:
                 # Connect to the PostgreSQL using psycopg2
                 connection = psycopg2.connect(
-                dbname='djangotraining',
-                user='djangouser',
-                password='secret',
-                host='127.0.0.1',
-                port=5433
+                dbname=os.getenv('NAME'),
+                user=os.getenv('USER'),
+                password=os.getenv('PASSWORD'),
+                host=os.getenv('HOST'),
+                port=os.getenv('PORT')
                 )
 
                 cursor = connection.cursor()
@@ -184,11 +185,11 @@ def populate_tables_ex08(request):
             try:
                 # Connect to the PostgreSQL using psycopg2
                 connection = psycopg2.connect(
-                dbname='djangotraining',
-                user='djangouser',
-                password='secret',
-                host='127.0.0.1',
-                port=5433
+                dbname=os.getenv('NAME'),
+                user=os.getenv('USER'),
+                password=os.getenv('PASSWORD'),
+                host=os.getenv('HOST'),
+                port=os.getenv('PORT')
                 )
 
                 cursor = connection.cursor()
@@ -237,11 +238,11 @@ def populate_table_with_psycopg_copy_from(request):
     try:
         # Connect to PostgreSQL
         connection = psycopg2.connect(
-            dbname='djangotraining',
-            user='djangouser',
-            password='secret',
-            host='127.0.0.1',
-            port=5433
+            dbname=os.getenv('NAME'),
+            user=os.getenv('USER'),
+            password=os.getenv('PASSWORD'),
+            host=os.getenv('HOST'),
+            port=os.getenv('PORT')
         )
         cursor = connection.cursor()
         
@@ -423,11 +424,11 @@ def display_table_sorted(request):
     try:
         # Connect to PostgreSQL
         connection = psycopg2.connect(
-            dbname='djangotraining',
-            user='djangouser',
-            password='secret',
-            host='127.0.0.1',
-            port=5433
+            dbname=os.getenv('NAME'),
+            user=os.getenv('USER'),
+            password=os.getenv('PASSWORD'),
+            host=os.getenv('HOST'),
+            port=os.getenv('PORT')
         )
 
         cursor = connection.cursor()

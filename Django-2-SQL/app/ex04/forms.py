@@ -8,11 +8,11 @@ class RemoveMovieForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(RemoveMovieForm, self).__init__(*args, **kwargs)
         connection = psycopg2.connect(
-            dbname='djangotraining',
-            user='djangouser',
-            password='secret',
-            host='127.0.0.1',
-            port=5433
+            dbname=os.getenv('NAME'),
+            user=os.getenv('USER'),
+            password=os.getenv('PASSWORD'),
+            host=os.getenv('HOST'),
+            port=os.getenv('PORT')
         )
 
         # Get movie titles from database

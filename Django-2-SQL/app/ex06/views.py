@@ -1,4 +1,5 @@
 import psycopg2
+import os
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 
@@ -7,11 +8,11 @@ def create_movies_table_ex06(request):
     try:
         # Connect to the PostgreSQL using psycopg2
         connection = psycopg2.connect(
-            dbname='djangotraining',
-            user='djangouser',
-            password='secret',
-            host='127.0.0.1',
-            port=5433
+            dbname=os.getenv('NAME'),
+            user=os.getenv('USER'),
+            password=os.getenv('PASSWORD'),
+            host=os.getenv('HOST'),
+            port=os.getenv('PORT')
         )
 
         # Create a cursor to execute SQL
@@ -72,11 +73,11 @@ def populate_table_movies(request):
     try:
         # Connect to the PostgreSQL using psycopg2
         connection = psycopg2.connect(
-            dbname='djangotraining',
-            user='djangouser',
-            password='secret',
-            host='127.0.0.1',
-            port=5433
+            dbname=os.getenv('NAME'),
+            user=os.getenv('USER'),
+            password=os.getenv('PASSWORD'),
+            host=os.getenv('HOST'),
+            port=os.getenv('PORT')
         )
 
         # Create a cursor to execute SQL
@@ -118,11 +119,11 @@ def display_movies_table(request):
     try:
         # Connect to the PostgreSQL using psycopg2
         connection = psycopg2.connect(
-            dbname='djangotraining',
-            user='djangouser',
-            password='secret',
-            host='127.0.0.1',
-            port=5433
+            dbname=os.getenv('NAME'),
+            user=os.getenv('USER'),
+            password=os.getenv('PASSWORD'),
+            host=os.getenv('HOST'),
+            port=os.getenv('PORT')
         )
 
         # Create a cursor to execute SQL
@@ -175,11 +176,11 @@ def update_table_row(request):
     try:
         # Connect to the PostgreSQL using psycopg2
         connection = psycopg2.connect(
-            dbname='djangotraining',
-            user='djangouser',
-            password='secret',
-            host='127.0.0.1',
-            port=5433
+            dbname=os.getenv('NAME'),
+            user=os.getenv('USER'),
+            password=os.getenv('PASSWORD'),
+            host=os.getenv('HOST'),
+            port=os.getenv('PORT')
         )
     
         cursor = connection.cursor()
