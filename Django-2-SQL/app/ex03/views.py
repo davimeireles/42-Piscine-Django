@@ -38,6 +38,7 @@ def populate_movies_ex03(request):
 def display_movies_ex03(request):
     try:
         movies = Movies.objects.all()
+
         column_names = [field.name for field in Movies._meta.fields]
         html = "<html><body><h1>Movies</h1><table border='1'>"
 

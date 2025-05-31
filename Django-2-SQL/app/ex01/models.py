@@ -2,21 +2,12 @@ from django.db import models
 
 # Create your models here.
 class Movies(models.Model):
-    title = models.CharField(max_length=64, null=False)
+    title = models.CharField(unique=True ,max_length=64, null=False)
     episode_nb = models.IntegerField(primary_key=True)
     opening_crawl = models.TextField(null=True)
     director = models.CharField(max_length=32, null=False)
     producer = models.CharField(max_length=128, null=False)
     release_date = models.DateField(null=False, blank=False)
 
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=['title'],
-                name='unique_movie_title',
-                opclasses=['varchar_pattern']
-			)
-		]
-    
     def __str__(self):
         return self.title

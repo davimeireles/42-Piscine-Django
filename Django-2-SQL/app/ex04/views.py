@@ -156,11 +156,11 @@ def display_movies_table(request):
 def remove_entity_from_table(request):
     try:
         connection = psycopg2.connect(
-        dbname=os.getenv('NAME'),
-        user=os.getenv('USER'),
-        password=os.getenv('PASSWORD'),
-        host=os.getenv('HOST'),
-        port=os.getenv('PORT')
+            dbname=os.getenv('NAME'),
+            user=os.getenv('USER'),
+            password=os.getenv('PASSWORD'),
+            host=os.getenv('HOST'),
+            port=os.getenv('PORT')
         )
 
         # Check if the movie exists
