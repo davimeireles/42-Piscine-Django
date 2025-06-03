@@ -75,18 +75,25 @@ def populate_table_movies(request):
             ('7', 'The Force Awakens', 'J. J. Abrams', 'Kathleen Kennedy, J. J. Abrams, Bryan Burk', '2015-12-11')
         ]
 
+        cursor.execute("SELECT episode_nb FROM ex04_movies")
+        existing_episodes = {row[0] for row in cursor.fetchall()}
+        
         response = []
 
         for movie in movies:
             try:
-                cursor.execute("""
-                    INSERT INTO ex04_movies(episode_nb, title, director, producer, release_date)
-                    VALUES (%s, %s, %s, %s, %s)
-                """, movie)
-                connection.commit()
-                response.append("OK")
+                episode_nb = int(movie[0])
+                if episode_nb not in existing_episodes:
+                    cursor.execute("""
+                        INSERT INTO ex04_movies(episode_nb, title, director, producer, release_date)
+                        VALUES (%s, %s, %s, %s, %s)
+                    """, movie)
+                    connection.commit()
+                    response.append("OK")
+                else:
+                    response.append("Error")
             except Exception as e:
-                response.append(f"Error: {e}")
+                response.append("Table doesnt exist.")
                 break
 
         cursor.close()
@@ -123,7 +130,7 @@ def display_movies_table(request):
         connection.close()
 
         if not movies:
-            return HttpResponse('No data avaible.')
+            return HttpResponse('No data available.')
 
         # Build HTML table
         html = "<html><body><h1>Movies</h1><table border='1'>"
@@ -140,7 +147,7 @@ def display_movies_table(request):
             for value in movie:
                 # Handle None values (void fields)
                 if value is None:
-                    html += "<td>(empty)</td>"
+                    html += "<td>None</td>"
                 else:
                     html += f"<td>{value}</td>"
             html += "</tr>"
@@ -173,7 +180,7 @@ def remove_entity_from_table(request):
             
         if not movies_exists:
             connection.close()
-            return HttpResponse('No data avaible')
+            return HttpResponse('No data available')
         
         if request.method == 'POST':
             form = RemoveMovieForm(request.POST)
@@ -200,4 +207,4 @@ def remove_entity_from_table(request):
 
         return render(request, 'remove_form.html', {'form': form})
     except Exception as error:
-        return HttpResponse(f'{error}')
+        return HttpResponse('Table doesnt exist.')

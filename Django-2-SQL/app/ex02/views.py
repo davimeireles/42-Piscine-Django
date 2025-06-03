@@ -78,7 +78,7 @@ def populate_table_movies(request):
                 connection.commit()
                 response.append("OK")
             except Exception as e:
-                response.append(f"Error: {e}")
+                response.append("Table dosent exist")
                 break
 
         cursor.close()
@@ -115,7 +115,7 @@ def display_movies_table(request):
         connection.close()
 
         if not movies:
-            return HttpResponse('No data avaible.')
+            return HttpResponse('No data available.')
 
         # Build HTML table
         html = "<html><body><h1>Movies</h1><table border='1'>"
@@ -132,7 +132,7 @@ def display_movies_table(request):
             for value in movie:
                 # Handle None values (void fields)
                 if value is None:
-                    html += "<td>(empty)</td>"
+                    html += "<td>None</td>"
                 else:
                     html += f"<td>{value}</td>"
             html += "</tr>"

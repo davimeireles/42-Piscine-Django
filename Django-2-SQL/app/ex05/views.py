@@ -20,15 +20,19 @@ def populate_movies_ex05(request):
 
         for movie in movies:
             try:
-                movie = Movies(
-                    episode_nb=movie[0],
-                    title=movie[1],
-                    director=movie[2],
-                    producer=movie[3],
-                    release_date=movie[4]
-                    )
-                movie.save()
-                response.append('OK')
+                episode_nb = movie[0]
+                if not Movies.objects.filter(episode_nb=episode_nb).exists():
+                    movie = Movies(
+                        episode_nb=movie[0],
+                        title=movie[1],
+                        director=movie[2],
+                        producer=movie[3],
+                        release_date=movie[4]
+                        )
+                    movie.save()
+                    response.append('OK')
+                else:
+                    response.append('Error')
             except Exception as error:
                 return HttpResponse(f'{error}')
         return HttpResponse("<br>".join(response))
@@ -39,6 +43,8 @@ def populate_movies_ex05(request):
 def display_movies_ex05(request):
     try:
         movies = Movies.objects.all()
+        if not movies:
+            raise Exception("No data available")
         column_names = [field.name for field in Movies._meta.fields]
         html = "<html><body><h1>Movies</h1><table border='1'>"
 

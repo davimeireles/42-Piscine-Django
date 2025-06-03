@@ -17,14 +17,14 @@ def display_table_data(request):
             )
         
         if not windy_planets.exists():
-            raise Exception('No data avaible for windy planets')
+            raise Exception('No data available for windy planets')
         
         people_from_windy_planets = People.objects.filter(
             homeworld__in = windy_planets
         ).order_by('name')
         
         if not people_from_windy_planets.exists():
-            raise Exception('No data avaible for people from windy planets')
+            raise Exception('No data available for people from windy planets')
 
         html = """
         <!DOCTYPE html>

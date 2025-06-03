@@ -1,4 +1,4 @@
-from .models import Movies
+from ex05.models import Movies
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.utils import timezone
@@ -39,6 +39,8 @@ def populate_movies_ex07(request):
 def display_movies_ex07(request):
     try:
         movies = Movies.objects.all()
+        if not movies:
+            raise Exception("No data available.")
         column_names = [field.name for field in Movies._meta.fields]
         html = "<html><body><h1>Movies</h1><table border='1'>"
 
@@ -61,11 +63,14 @@ def display_movies_ex07(request):
     except Exception as e:
         # Return "No data available" for any errors
         return HttpResponse("No data available")
-    
+
 def update_table_row_ex07(request):
     try:
         # Get all titles from the table
         titles = Movies.objects.values_list('title', flat=True)
+
+        if not titles:
+            raise Exception("No data available.")
 
         if request.method == 'POST':
             # Get the selected title and the new opening crawl text from the form
@@ -78,4 +83,4 @@ def update_table_row_ex07(request):
             return redirect('/ex07/update')
         return render(request, 'update_table_row.html', {'titles': titles})
     except Exception as e:
-        return HttpResponse('No data avaible')
+        return HttpResponse('No data available')
