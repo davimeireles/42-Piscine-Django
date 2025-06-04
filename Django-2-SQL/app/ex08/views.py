@@ -18,6 +18,7 @@ def init_tables_ex08(request):
             port=os.getenv('PORT')
         )
 
+        response = []
         # Create a cursor to execute SQL
         cursor = connection.cursor()
 
@@ -25,37 +26,46 @@ def init_tables_ex08(request):
         cursor.execute("DROP TABLE IF EXISTS ex08_planets CASCADE")
         cursor.execute("DROP TABLE IF EXISTS ex08_people CASCADE")
 
-        # SQL to create the table if dont exist
-        cursor.execute("""
-        CREATE TABLE IF NOT EXISTS ex08_planets (
-            id SERIAL PRIMARY KEY,
-            name VARCHAR(64) UNIQUE NOT NULL,
-            climate VARCHAR,
-            diameter INTEGER,
-            orbital_period INTEGER,
-            population BIGINT,
-            rotation_period INTEGER,
-            surface_water REAL,
-            terrain VARCHAR(128)
-        );
-        """)
-        
-        cursor.execute("""
-        CREATE TABLE IF NOT EXISTS ex08_people (
-            id SERIAL PRIMARY KEY,
-            name VARCHAR(64) UNIQUE NOT NULL,
-            birth_year VARCHAR(32),
-            gender VARCHAR(32),
-            eye_color VARCHAR(32),
-            hair_color VARCHAR(32),
-            height INTEGER,
-            mass REAL,
-            homeworld VARCHAR(64),
-            CONSTRAINT fk_ex08_planets
-                FOREIGN KEY(homeworld)
-                REFERENCES ex08_planets(name)
+        try:
+            # SQL to create the table if dont exist
+            cursor.execute("""
+            CREATE TABLE IF NOT EXISTS ex08_planets (
+                id SERIAL PRIMARY KEY,
+                name VARCHAR(64) UNIQUE NOT NULL,
+                climate VARCHAR,
+                diameter INTEGER,
+                orbital_period INTEGER,
+                population BIGINT,
+                rotation_period INTEGER,
+                surface_water REAL,
+                terrain VARCHAR(128)
             );
-        """)
+            """)
+
+            response.append('OK')
+        except Exception as e:
+            response.append('Error')
+        
+        try:
+            cursor.execute("""
+            CREATE TABLE IF NOT EXISTS ex08_people (
+                id SERIAL PRIMARY KEY,
+                name VARCHAR(64) UNIQUE NOT NULL,
+                birth_year VARCHAR(32),
+                gender VARCHAR(32),
+                eye_color VARCHAR(32),
+                hair_color VARCHAR(32),
+                height INTEGER,
+                mass REAL,
+                homeworld VARCHAR(64),
+                CONSTRAINT fk_ex08_planets
+                    FOREIGN KEY(homeworld)
+                    REFERENCES ex08_planets(name)
+                );
+            """)
+            response.append('OK')
+        except Exception as e:
+            response.append('Error')
 
         # Commit to database
         connection.commit()
@@ -64,7 +74,7 @@ def init_tables_ex08(request):
         cursor.close()
         connection.close()
 
-        return HttpResponse('OK')
+        return HttpResponse("<br>".join(response))
     except Exception as error:
         return HttpResponse(f'{error}')
     
@@ -124,33 +134,58 @@ def populate_tables_ex08(request):
                 )
 
                 cursor = connection.cursor()
-                # Now insert the data into the database
+                
+                # First check if table exists
+                cursor.execute("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'ex08_planets')")
+                table_exists = cursor.fetchone()[0]
+                
+                if not table_exists:
+                    cursor.close()
+                    connection.close()
+                    return HttpResponse("No data available")
+                
+                # Check if any planets need to be inserted
+                inserted_count = 0
+                
                 for planet in planets_data_list:
-                    cursor.execute("""
-                    INSERT INTO ex08_planets
-                    (name, climate, diameter, orbital_period, population, rotation_period, surface_water, terrain)
-                    VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
-                    """, [
-                        planet['name'],
-                        planet['climate'],
-                        planet['diameter'],
-                        planet['orbital_period'],
-                        planet['population'],
-                        planet['rotation_period'],
-                        planet['surface_water'],
-                        planet['terrain']
-                    ])
+                    # Check if the planet already exists
+                    cursor.execute("SELECT 1 FROM ex08_planets WHERE name = %s", [planet['name']])
+                    exists = cursor.fetchone()
+                    
+                    if not exists:
+                        cursor.execute("""
+                        INSERT INTO ex08_planets
+                        (name, climate, diameter, orbital_period, population, rotation_period, surface_water, terrain)
+                        VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
+                        """, [
+                            planet['name'],
+                            planet['climate'],
+                            planet['diameter'],
+                            planet['orbital_period'],
+                            planet['population'],
+                            planet['rotation_period'],
+                            planet['surface_water'],
+                            planet['terrain']
+                        ])
+                        inserted_count += 1
+                
                 connection.commit()
                 cursor.close()
                 connection.close()
+                
+                if inserted_count == 0:
+                    return HttpResponse("No new data to insert")
+                else:
+                    return HttpResponse(f"Successfully inserted {inserted_count} planet(s)")
+                    
             except Exception as insert_error:
-                return HttpResponse(f"Error inserting {planet['name']}: {insert_error}")
+                return HttpResponse("No data available")
     except FileNotFoundError:
         return HttpResponse('Error: planets.csv file not found')
     except csv.Error as csv_error:
         return HttpResponse(f'CSV parsing error: {csv_error}')
     except Exception as error:
-        return HttpResponse(f'Unexpected error: {error}')
+        return HttpResponse(f"{error}")
 
     try:
         # List to store all people data
@@ -193,37 +228,61 @@ def populate_tables_ex08(request):
                 )
 
                 cursor = connection.cursor()
-                # Before inserting each person, check if their homeworld exists
+                
+                # First check if table exists
+                cursor.execute("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'ex08_people')")
+                table_exists = cursor.fetchone()[0]
+                
+                if not table_exists:
+                    cursor.close()
+                    connection.close()
+                    return HttpResponse("No data available")
+                
+                # Check if any people need to be inserted
+                inserted_count = 0
+                
                 for person in people_data_list:
-                    homeworld = person['homeworld']
+                    # Check if the person already exists
+                    cursor.execute("SELECT 1 FROM ex08_people WHERE name = %s", [person['name']])
+                    exists = cursor.fetchone()
                     
-                    if homeworld is not None:
-                        # Check if this homeworld exists in the planets table
-                        cursor.execute("SELECT 1 FROM ex08_planets WHERE name = %s", [homeworld])
-                        if cursor.fetchone() is None:
-                            # Homeworld doesn't exist, set to NULL
-                            person['homeworld'] = None
-
-                    cursor.execute("""
-                    INSERT INTO ex08_people
-                    (name, birth_year, gender, eye_color, hair_color, height, mass, homeworld)
-                    VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
-                    """, [
-                        person['name'],
-                        person['birth_year'],
-                        person['gender'],
-                        person['eye_color'],
-                        person['hair_color'],
-                        person['height'],
-                        person['mass'],
-                        person['homeworld']
-                    ])
+                    if not exists:
+                        # Before inserting, check if homeworld exists
+                        homeworld = person['homeworld']
+                        if homeworld is not None:
+                            cursor.execute("SELECT 1 FROM ex08_planets WHERE name = %s", [homeworld])
+                            if cursor.fetchone() is None:
+                                # Homeworld doesn't exist, set to NULL
+                                person['homeworld'] = None
+                    
+                        cursor.execute("""
+                        INSERT INTO ex08_people
+                        (name, birth_year, gender, eye_color, hair_color, height, mass, homeworld)
+                        VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
+                        """, [
+                            person['name'],
+                            person['birth_year'],
+                            person['gender'],
+                            person['eye_color'],
+                            person['hair_color'],
+                            person['height'],
+                            person['mass'],
+                            person['homeworld']
+                        ])
+                        inserted_count += 1
+            
                 connection.commit()
                 cursor.close()
                 connection.close()
+                
+                if inserted_count == 0:
+                    return HttpResponse("No new data to insert")
+                else:
+                    return HttpResponse(f"Successfully inserted {inserted_count} person/people")
+                
             except Exception as insert_error:
-                return HttpResponse(f"Error inserting {person['name']}: {insert_error}")
-        return HttpResponse(f'Successfully processed {len(people_data_list)} people records and {len(planets_data_list)} planets records')
+                return HttpResponse("No data available")
+    
     except FileNotFoundError:
         return HttpResponse('Error: people.csv file not found')
     except csv.Error as csv_error:
@@ -457,7 +516,7 @@ def display_table_sorted(request):
         connection.close()
 
         if not data:
-            return HttpResponse('No avaible data')
+            return HttpResponse('No data available')
         
         # Create proper HTML with DOCTYPE, charset, and structure
         html = """
@@ -506,4 +565,4 @@ def display_table_sorted(request):
         """
         return HttpResponse(html)
     except Exception as error:
-        return HttpResponse(f'{error}')
+        return HttpResponse("No data available")

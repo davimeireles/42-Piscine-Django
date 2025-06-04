@@ -10,7 +10,7 @@ def display_table_data(request):
         planets_data = Planets.objects.all()
 
         if not people_data or not planets_data:
-            raise Exception('No data available, please use the following command line before use: python3 manage.py loaddata ex09_initial_data.json')
+            return HttpResponse('No data available, please use the following command line:<br>python3 manage.py loaddata ex09_initial_data.json')
         
         windy_planets = Planets.objects.filter(
             Q(climate__icontains='windy')
