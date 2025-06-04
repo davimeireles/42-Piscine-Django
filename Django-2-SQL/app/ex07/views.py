@@ -1,4 +1,4 @@
-from ex05.models import Movies
+from .models import Movies
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.utils import timezone
@@ -17,6 +17,7 @@ def populate_movies_ex07(request):
         ]
 
         response = []
+        current_time = timezone.now()
 
         for movie in movies:
             try:
@@ -25,7 +26,9 @@ def populate_movies_ex07(request):
                     title=movie[1],
                     director=movie[2],
                     producer=movie[3],
-                    release_date=movie[4]
+                    release_date=movie[4],
+                    created=current_time,
+                    updated=current_time
                     )
                 movie.save()
                 response.append('OK')
@@ -40,7 +43,7 @@ def display_movies_ex07(request):
     try:
         movies = Movies.objects.all()
         if not movies:
-            raise Exception("No data available.")
+            raise Exception("No data available")
         column_names = [field.name for field in Movies._meta.fields]
         html = "<html><body><h1>Movies</h1><table border='1'>"
 
@@ -52,7 +55,12 @@ def display_movies_ex07(request):
         for movie in movies:
             html += "<tr>"
             for column in column_names:
-                value = getattr(movie, column)
+                if column == 'created':
+                    value = movie.formatted_created
+                elif column == 'updated':
+                    value = movie.formatted_updated
+                else:
+                    value = getattr(movie, column)
                 html += f"<td>{value}</td>"
             html += "</tr>"
 
@@ -65,22 +73,26 @@ def display_movies_ex07(request):
         return HttpResponse("No data available")
 
 def update_table_row_ex07(request):
+
     try:
-        # Get all titles from the table
-        titles = Movies.objects.values_list('title', flat=True)
+        movies = Movies.objects.all()
+        if not movies:
+            raise Exception("No data available")
+        try:
+            # Get all titles from the table
+            titles = Movies.objects.values_list('title', flat=True)
 
-        if not titles:
-            raise Exception("No data available.")
+            if request.method == 'POST':
+                # Get the selected title and the new opening crawl text from the form
+                selected_title = request.POST.get('title')
+                new_craw_text = request.POST.get('craw_text')
 
-        if request.method == 'POST':
-            # Get the selected title and the new opening crawl text from the form
-            selected_title = request.POST.get('title')
-            new_craw_text = request.POST.get('craw_text')
-
-            # Get the specific title
-            row_to_update = Movies.objects.filter(title=selected_title)
-            row_to_update.update(opening_crawl=new_craw_text, updated=timezone.now())
-            return redirect('/ex07/update')
-        return render(request, 'update_table_row.html', {'titles': titles})
+                # Get the specific title
+                row_to_update = Movies.objects.filter(title=selected_title)
+                row_to_update.update(opening_crawl=new_craw_text, updated=timezone.now())
+                return redirect('/ex07/update')
+            return render(request, 'update_table_row.html', {'titles': titles})
+        except Exception as e:
+            return HttpResponse('No data available')
     except Exception as e:
-        return HttpResponse('No data available')
+        return HttpResponse(f'{e}')
